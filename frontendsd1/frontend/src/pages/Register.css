@@ -1,0 +1,61 @@
+@import '../styles/variables.css';
+
+.register-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: var(--olive-100);
+}
+
+.register-form {
+  background-color: var(--butter-100);
+  padding: 2rem 3rem;
+  border-radius: var(--radius);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  width: 320px;
+}
+
+.register-form h2 {
+  text-align: center;
+  color: var(--olive-500);
+  margin-bottom: 1rem;
+}
+
+.register-form input {
+  padding: 0.6rem;
+  border: 1px solid var(--olive-300);
+  border-radius: var(--radius);
+  background-color: #fff;
+  font-size: 0.95rem;
+}
+
+.register-form button {
+  background-color: var(--olive-500);
+  color: white;
+  border: none;
+  border-radius: var(--radius);
+  padding: 0.7rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.register-form button:hover {
+  background-color: var(--olive-300);
+}
+
+.error-msg {
+  color: #b84242;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+.success-msg {
+  color: #4d8830;
+  text-align: center;
+  font-size: 0.9rem;
+}

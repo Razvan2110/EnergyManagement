@@ -1,0 +1,77 @@
+/* Login.css */
+* {
+  box-sizing: border-box;
+}
+
+body, html, #root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+}
+
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100%;
+  background-color: #f8f6e9; /* butter-yellow white */
+  position: relative;
+  z-index: 1;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  background-color: #f3f1db;
+  padding: 2rem 3rem;
+  border-radius: 1rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  width: 100%;
+  max-width: 400px;
+  z-index: 10;
+}
+
+.login-form h2 {
+  text-align: center;
+  color: #5a5d40;
+  margin-bottom: 1.5rem;
+}
+
+.login-form input {
+  padding: 0.8rem;
+  margin-bottom: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+}
+
+.login-form input:focus {
+  outline: none;
+  border-color: #a9ad7d;
+}
+
+.login-form button {
+  background-color: #bfc686;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.8rem;
+  font-weight: bold;
+  color: #333;
+  cursor: pointer;
+}
+
+.login-form button:hover {
+  background-color: #d5da9f;
+}
+
+.error-msg {
+  color: red;
+  text-align: center;
+  margin-top: 1rem;
+}
+/* Ensure no invisible overlay blocks input */
+.login-container * {
+  pointer-events: auto !important;
+}

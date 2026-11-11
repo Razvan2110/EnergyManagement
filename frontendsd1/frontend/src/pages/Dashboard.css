@@ -1,0 +1,165 @@
+.dashboard-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f7f5e8;
+}
+
+.dashboard-card {
+  background-color: #fffef5;
+  border: 2px solid #d6d3b1;
+  border-radius: 20px;
+  padding: 40px 60px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  width: 70%;
+  max-width: 900px;
+  text-align: center;
+}
+
+.dashboard-card h1 {
+  color: #556b2f;
+  margin-bottom: 10px;
+}
+
+.dashboard-card p {
+  color: #444;
+  margin-bottom: 15px;
+}
+
+.admin-section {
+  margin-top: 30px;
+  text-align: left;
+}
+
+.admin-section h2 {
+  color: #6b6b47;
+  margin-bottom: 10px;
+}
+
+.admin-section ul {
+  list-style: none;
+  padding: 0;
+  background-color: #fdfcf3;
+  border-radius: 10px;
+  padding: 10px;
+  margin-bottom: 20px;
+}
+
+.admin-section li {
+  padding: 8px;
+  border-bottom: 1px solid #ddd;
+  color: #333;
+}
+
+.admin-section li:last-child {
+  border-bottom: none;
+}
+
+.logout-btn {
+  background-color: #c2b280;
+  color: white;
+  border: none;
+  padding: 10px 25px;
+  border-radius: 10px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.logout-btn:hover {
+  background-color: #a39470;
+}
+
+.dashboard-loading {
+  text-align: center;
+  margin-top: 100px;
+  font-size: 1.2rem;
+  color: #6b6b47;
+}
+.crud-section {
+  margin-top: 30px;
+}
+
+.add-btn {
+  background-color: #b6c197;
+  border: none;
+  color: white;
+  padding: 8px 14px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #b8cf8b;
+}
+
+.data-table th, .data-table td {
+  border: 1px solid #000000;
+  padding: 8px;
+}
+
+.data-table th {
+  background-color: #ecec6d;
+}
+
+.data-table button {
+  margin-right: 5px;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.data-table button:first-of-type {
+  background-color: #a8b97a;
+  color: white;
+}
+
+.data-table button:last-of-type {
+  background-color: #c47c7c;
+  color: white;
+}
+
+.modal {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-form {
+  background: #fffef5;
+  padding: 25px;
+  border-radius: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 300px;
+}
+
+.modal-form input {
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: space-between;
+}
+
+.modal-buttons button:first-child {
+  background-color: #9dbb72;
+  color: white;
+}
+
+.modal-buttons button:last-child {
+  background-color: #ccc;
+}

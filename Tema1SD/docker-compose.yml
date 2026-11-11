@@ -1,0 +1,240 @@
+version: "3.9"
+
+services:
+  # ==========================
+  # DEVICE DATABASE
+  # ==========================
+  device-db:
+    build: ./sql/device
+    container_name: device-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: device_db
+      MYSQL_USER: device_user
+      MYSQL_PASSWORD: parola
+    ports:
+      - "3308:3306"
+    volumes:
+      - device_data:/var/lib/mysql
+    networks:
+      - tema1SD
+
+  # ==========================
+  # USER DATABASE
+  # ==========================
+  user-db:
+    build: ./sql/user
+    container_name: user-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: parola
+      MYSQL_DATABASE: user_db
+      MYSQL_USER: user_user
+      MYSQL_PASSWORD: user_pass
+    ports:
+      - "3309:3306"
+    volumes:
+      - user_data:/var/lib/mysql
+    networks:
+      - tema1SD
+
+  # ==========================
+  # AUTH DATABASE
+  # ==========================
+  auth-db:
+    build: ./sql/auth
+    container_name: auth-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: auth_db
+      MYSQL_USER: auth_user
+      MYSQL_PASSWORD: auth_pass
+    ports:
+      - "3310:3306"
+    volumes:
+      - auth_data:/var/lib/mysql
+    networks:
+      - tema1SD
+
+  # ==========================
+  # TRAEFIK (Reverse Proxy)
+  # ==========================
+  traefik:
+    image: traefik:v3.1
+    container_name: traefik
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+    ports:
+      - "80:80"        
+      - "8080:8080"    
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - tema1SD
+    labels:
+      - "traefik.enable=true"
+  # ==========================
+  # AUTH SERVICE (3 instances)
+  # ==========================
+  auth-service:
+    build: ./authService
+    depends_on:
+      - auth-db
+    restart: always
+    deploy:
+      replicas: 3
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.auth.rule=PathPrefix(`/auth`)"
+      - "traefik.http.services.auth.loadbalancer.server.port=8081"
+    networks:
+      - tema1SD
+
+  # ==========================
+  # USER SERVICE (3 instances)
+  # ==========================
+  user-service:
+    build: ./userService
+    depends_on:
+      - user-db
+    restart: always
+    deploy:
+      replicas: 3
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.user.rule=PathPrefix(`/user`)"
+      - "traefik.http.services.user.loadbalancer.server.port=8082"
+    networks:
+      - tema1SD
+
+  # ==========================
+  # DEVICE SERVICE (3 instances)
+  # ==========================
+  device-service:
+    build: ./deviceService
+    depends_on:
+      - device-db
+    restart: always
+    deploy:
+      replicas: 3
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.device.rule=PathPrefix(`/device`)"
+      - "traefik.http.services.device.loadbalancer.server.port=8083"
+    networks:
+      - tema1SD
+
+  # ==========================
+  # RABBITMQ
+  # ==========================
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    container_name: rabbitmq
+    restart: always
+    ports:
+      - "5764:5672"
+      - "15764:15672"
+    networks:
+      - tema1SD
+
+  # ==========================
+  # MONITORING DATABASE
+  # ==========================
+  monitoring-db:
+    build: ./sql/monitoring
+    container_name: monitoring-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: monitoring_db
+      MYSQL_USER: monitoring_user
+      MYSQL_PASSWORD: monitoring_pass
+    ports:
+      - "3311:3306"
+    volumes:
+      - monitoring_data:/var/lib/mysql
+    networks:
+      - tema1SD
+
+  # ==========================
+  # MONITORING SERVICE
+  # ==========================
+  monitoring-service:
+    build: ./monitoringService
+    container_name: monitoring-service
+    depends_on:
+      - monitoring-db
+      - rabbitmq
+    restart: always
+    ports:
+      - "8084:8084"
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+      - SPRING_DATASOURCE_URL=jdbc:mysql://monitoring-db:3306/monitoring_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_USERNAME=monitoring_user
+      - SPRING_DATASOURCE_PASSWORD=monitoring_pass
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.monitoring.rule=PathPrefix(`/monitoring`)"
+      - "traefik.http.routers.monitoring.middlewares=monitoring-stripprefix,monitoring-cors"
+      - "traefik.http.middlewares.monitoring-stripprefix.stripprefix.prefixes=/monitoring"
+      - "traefik.http.middlewares.monitoring-cors.headers.accessControlAllowMethods=GET,OPTIONS,PUT,POST,DELETE"
+      - "traefik.http.middlewares.monitoring-cors.headers.accessControlAllowHeaders=*"
+      - "traefik.http.middlewares.monitoring-cors.headers.accessControlAllowOriginList=*"
+      - "traefik.http.middlewares.monitoring-cors.headers.accessControlMaxAge=100"
+      - "traefik.http.middlewares.monitoring-cors.headers.addVaryHeader=true"
+      - "traefik.http.services.monitoring.loadbalancer.server.port=8084"
+    networks:
+      - tema1SD
+
+  # ==========================
+  # DEVICE SIMULATOR
+  # ==========================
+  device-simulator:
+    build: ./deviceSimulator
+    container_name: device-simulator
+    restart: always
+    env_file:
+      - ./deviceSimulator/.env
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+    depends_on:
+      - rabbitmq
+    networks:
+      - tema1SD
+
+  # ==========================
+  # WEBSOCKET SERVICE
+  # ==========================
+  websocket-service:
+    build: ./WebsocketService
+    container_name: websocket-service
+    depends_on:
+      - rabbitmq
+    restart: always
+    networks:
+      - tema1SD
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.websocket.rule=PathPrefix(`/chat`)"
+      - "traefik.http.routers.websocket.middlewares=websocket-stripprefix"
+      - "traefik.http.middlewares.websocket-stripprefix.stripprefix.prefixes=/chat"
+      - "traefik.http.services.websocket.loadbalancer.server.port=8080"
+
+# ==========================
+# NETWORKS & VOLUMES
+# ==========================
+networks:
+  tema1SD:
+    external: true
+
+volumes:
+  device_data:
+  user_data:
+  auth_data:
+  monitoring_data:
